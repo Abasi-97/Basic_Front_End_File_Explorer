@@ -1,0 +1,69 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    margin: 0;
+}
+header{
+    display: flex;
+    width: 100%;
+    background-color: #404040;
+    color: aliceblue;
+}
+h1{
+    margin-left: 10%;
+}
+.title-container{
+    width: 50%;
+    align-items: center;
+}
+.folder-name-display-container{
+    width: 50%;
+    text-align: center;
+    align-content: center;
+    align-items: center;
+}
+.operation-buttons{
+    display: flex;
+    width: 100%;
+}
+.container{
+    display: block;
+    
+}
+.create-folder{
+    width: 33.3%;
+}
+.create-file{
+    width: 33.3%;
+}
+.view{
+    width: 33.3%;
+}
+.form{
+    display: none;
+    padding: 20px;
+    gap: 0;
+
+}
+.folder{
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+    align-items: center;
+}
+.folder-name::before {
+    content: "";
+    width: 24px;  /* Adjust icon size */
+    height: 18px;
+    background-image: url('../img/Folder-icon.jpg'); /* Update with your image path */
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+.date{
+    text-align: end;
+}
