@@ -10,6 +10,7 @@ const root = {
     time:"4/22/2025",
     content:[]
 }
+//this function checks if there are any rows for the input field and folder contents
 const killRows = () =>{
     let rows = document.querySelectorAll('tr');
     for(let i = 0; i < rows.length; i++){
@@ -31,41 +32,53 @@ function displayFolderContent(folder){
         displayMessage.innerText = '';
         genRowOfConents(folder.content);
     }
+    
+    //buttons for operations
     let newFolderBtn = document.querySelector('.newfolder');
     let newFileBtn = document.querySelector('.newfile');
     let deleteBtn = document.querySelector('.delete');
     let renameBtn = document.querySelector('.rename');
+    let parentDirectoryBtn = document.querySelector('.parent-directory-btn');
+    let searchInput = document.querySelector('.search-input');
+    let searchBtn = document.querySelector('.search-btn');
+    //event for new folder button
     newFolderBtn.addEventListener('click',()=>{
         displayMessage.innerText = '';
         let oldInputRow = document.querySelector('.form-container');
         if(oldInputRow){
             oldInputRow.remove();
         }
+        //calling the geninput() function
         genInputForm();
         let addBtn = document.querySelector('.addBtn');
         let inputForName = document.querySelector('.item-name');
+        //calling the geninput() function
         addBtn.addEventListener('click',()=>{
+            //new folder properties
             const newFolder = {
                 name:inputForName.value,
                 type:"folder",
                 time: `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`,
                 content:[]
             }
+            //push the folder to the content array
             folder.content.push(newFolder);
             killRows();
             genRowOfConents(folder.content);
         });
     });
-
+    //event for new file button
     newFileBtn.addEventListener('click',()=>{
         displayMessage.innerText = '';
         let oldInputRow = document.querySelector('.form-container');
         if(oldInputRow){
             oldInputRow.remove();
         }
+        //calling the geninput() function
         genInputForm();
         let addBtn = document.querySelector('.addBtn');
         let inputForName = document.querySelector('.item-name');
+        //when the button is created, add an event
         addBtn.addEventListener('click',()=>{
             const newFile = {
                 name:inputForName.value,
@@ -79,11 +92,23 @@ function displayFolderContent(folder){
     });
 
     renameBtn.addEventListener('click',renameFunc);
+    deleteBtn.onclick = () =>{
+        deleteFunc();
+    }
+    searchBtn.onclick = () =>{
+        console.log(searchInput.value);
+        searchContent(root,searchInput.value);
+    }
+    parentDirectoryBtn.onclick = () =>{
+        searchContent(root,folder.name);
+    }
 }
 
+//calling the display function
 displayFolderContent(root);
 
 const genRowOfConents = (content) => {
+    console.log(content);
     for(let j = 0; j < content.length; j++){
         let col = document.createElement('div');
         col.className = 'col-md-4 d-flex file-list-content mb-5 gap-3';
@@ -131,13 +156,14 @@ const matchContentRowstoArray = (content) =>{
                     let add = document.querySelector('.addBtn');
                     let inputForName = document.querySelector('.item-name');
                     add.addEventListener('click',()=>{
-                        let renameBtn = document.querySelector('.rename');
-                        //renameBtn.removeEventListener(renameFunc);
                         rename = false;
                         content[index].name = inputForName.value;
                         killRows();
-                        genRowOfConents(content, table);
+                        genRowOfConents(content);
                     });
+                }else if(deleteContent === true){
+                    e.target.parentNode.parentNode.parentNode.remove();
+                    content = content.splice(index,1);
                 }
             }else if(e.target.className === 'card-img-top'){
                 if(content[index].type === 'folder'){
@@ -147,6 +173,7 @@ const matchContentRowstoArray = (content) =>{
         });
     });
 }
+//function to generate the input form for the file/folder name
 const genInputForm = () =>{
     let inputRow = document.createElement('tr');
     let formContainer = document.createElement('div');
@@ -158,7 +185,7 @@ const genInputForm = () =>{
     addBtn.innerText = 'add';
     formContainer.append(inputForName);
     formContainer.append(addBtn);
-    inputRow.append(formContainer)
+    inputRow.append(formContainer);
     table.append(inputRow);
 }
 function renameFunc(){
@@ -167,4 +194,20 @@ function renameFunc(){
 }
 function deleteFunc(){
     deleteContent = true;
+}
+function searchContent(folder, folderName){
+    console.log(folder.name);
+    let nameFound = false;
+    for(let i = 0; i < folder.content.length; i++){
+        if(folder.content[i].name === folderName){
+            nameFound = true;
+        }
+    }
+    if(nameFound === true){
+        return displayFolderContent(folder);
+    }else{
+        for(let i = 0; i < folder.content.length; i++){
+            searchContent(folder.content[i], folderName);
+        }
+    }
 }
