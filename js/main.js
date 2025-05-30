@@ -4,11 +4,36 @@ let table = document.querySelector('.file-table');
 let contentList = document.querySelector('.content-list');
 let deleteContent = false;
 let rename = false;
+let listContainer = document.querySelector('.main-nav');
 const root = {
     name:"Root Folder",
     type:"folder",
     time:"4/22/2025",
-    content:[]
+    content:[
+        {
+            name:"Movies",
+            type:"folder",
+            time:"4/22/2025",
+            content:[]
+        },
+        {
+            name:"Gallery",
+            type:"folder",
+            time:"4/22/2025",
+            content:[{
+                name:"Paintings",
+                type:"folder",
+                time:"4/22/2025",
+                content:[]
+            },
+            {
+                name:"Photoes",
+                type:"folder",
+                time:"4/22/2025",
+                content:[]
+            }]
+        }
+    ]
 }
 //this function checks if there are any rows for the input field and folder contents
 const killRows = () =>{
@@ -21,13 +46,87 @@ const killRows = () =>{
         col[i].remove();
     }
 }
-
+//this is to update the GUI for the current directory
+const genRowOfConents = (content) => {
+    console.log(content);
+    if(content.length===0){
+        displayMessage.innerText = 'Empty directory';
+    }
+    for(let j = 0; j < content.length; j++){
+        let col = document.createElement('div');
+        col.className = 'col-md-3 d-flex file-list-content mb-5 gap-3';
+        let cardImage = document.createElement('div');
+        cardImage.className = 'card border-0';
+        let img = document.createElement('img');
+        img.className = 'card-img-top';
+        if(content[j].type === 'folder'){
+            img.setAttribute('src','img/Folder-icon6.png');
+        }else if(content[j].type === 'file'){
+            img.setAttribute('src','img/file-icon.png');
+        }
+        cardImage.append(img);
+        let cardTitleContainer = document.createElement('div');
+        cardTitleContainer.className = 'row justify-content-start content-container';
+        let cardTitle = document.createElement('div');
+        cardTitle.className = 'col-8 pt-2';
+        let title = document.createElement('div');
+        title.className = 'fw-bold small content-name';
+        if(content[j].name.length>10){
+            title.innerText = '...';
+        }else{
+            title.innerText = `${content[j].name}`;
+        }
+        let folderDate = document.createElement('div');
+        folderDate.className = 'small';
+        folderDate.innerText = content[j].time;
+        cardTitle.append(title);
+        cardTitle.append(folderDate);
+        cardTitleContainer.append(cardTitle);
+        col.append(cardImage);
+        col.append(cardTitleContainer);
+        contentList.append(col);
+    }
+    matchContentRowstoArray(content);
+}
+//matching GUI folders to the content array
+const matchContentRowstoArray = (content) =>{
+    let cols = document.querySelectorAll('.file-list-content');
+    cols.forEach((col,index)=>{
+        col.addEventListener('click',(e)=>{
+            if(e.target.className === 'fw-bold small content-name'){
+                if(rename === true){
+                    genInputForm();
+                    let add = document.querySelector('.addBtn');
+                    let inputForName = document.querySelector('.item-name');
+                    add.addEventListener('click',()=>{
+                        rename = false;
+                        content[index].name = inputForName.value;
+                        killRows();
+                        genRowOfConents(content);
+                    });
+                }else if(deleteContent === true){
+                    e.target.parentNode.parentNode.parentNode.remove();
+                    content.splice(index,1);
+                    console.log(content);
+                    killRows();
+                    genRowOfConents(content);
+                }
+            }else if(e.target.className === 'card-img-top'){
+                if(content[index].type === 'folder'){
+                    displayFolderContent(content[index]);
+                }
+            }
+        });
+    });
+    listContainer.innerHTML = '';
+    generateAccordion(root,0,listContainer);
+}
+//this is to display the files in the current directory
 function displayFolderContent(folder){
     let currentTime = new Date();
-    console.log(root);
     killRows();
     if(folder.content.length === 0){
-        displayMessage.innerText = 'folder is empty';
+        displayMessage.innerText = 'Empty directory';
     }else{
         displayMessage.innerText = '';
         genRowOfConents(folder.content);
@@ -96,7 +195,6 @@ function displayFolderContent(folder){
         deleteFunc();
     }
     searchBtn.onclick = () =>{
-        console.log(searchInput.value);
         searchContent(root,searchInput.value);
     }
     parentDirectoryBtn.onclick = () =>{
@@ -107,72 +205,7 @@ function displayFolderContent(folder){
 //calling the display function
 displayFolderContent(root);
 
-const genRowOfConents = (content) => {
-    console.log(content);
-    for(let j = 0; j < content.length; j++){
-        let col = document.createElement('div');
-        col.className = 'col-md-4 d-flex file-list-content mb-5 gap-3';
-        let cardImage = document.createElement('div');
-        cardImage.className = 'card border-0';
-        let img = document.createElement('img');
-        img.className = 'card-img-top';
-        if(content[j].type === 'folder'){
-            img.setAttribute('src','img/Folder-icon6.png');
-        }else if(content[j].type === 'file'){
-            img.setAttribute('src','img/Folder-icon.jpg');
-        }
-        cardImage.append(img);
-        let cardTitleContainer = document.createElement('div');
-        cardTitleContainer.className = 'row justify-content-start content-container';
-        let cardTitle = document.createElement('div');
-        cardTitle.className = 'col-8 pt-2';
-        let title = document.createElement('div');
-        title.className = 'fw-bold small content-name';
-        if(content[j].name.length>10){
-            title.innerText = '...';
-        }else{
-            title.innerText = `${content[j].name}`;
-        }
-        let folderDate = document.createElement('div');
-        folderDate.className = 'small';
-        folderDate.innerText = content[j].time;
-        cardTitle.append(title);
-        cardTitle.append(folderDate);
-        cardTitleContainer.append(cardTitle);
-        col.append(cardImage);
-        col.append(cardTitleContainer);
-        contentList.append(col);
-    }
-    matchContentRowstoArray(content);
-}
 
-const matchContentRowstoArray = (content) =>{
-    let cols = document.querySelectorAll('.file-list-content');
-    cols.forEach((col,index)=>{
-        col.addEventListener('click',(e)=>{
-            if(e.target.className === 'fw-bold small content-name'){
-                if(rename === true){
-                    genInputForm();
-                    let add = document.querySelector('.addBtn');
-                    let inputForName = document.querySelector('.item-name');
-                    add.addEventListener('click',()=>{
-                        rename = false;
-                        content[index].name = inputForName.value;
-                        killRows();
-                        genRowOfConents(content);
-                    });
-                }else if(deleteContent === true){
-                    e.target.parentNode.parentNode.parentNode.remove();
-                    content = content.splice(index,1);
-                }
-            }else if(e.target.className === 'card-img-top'){
-                if(content[index].type === 'folder'){
-                    displayFolderContent(content[index]);
-                }
-            }
-        });
-    });
-}
 //function to generate the input form for the file/folder name
 const genInputForm = () =>{
     let inputRow = document.createElement('tr');
@@ -190,13 +223,11 @@ const genInputForm = () =>{
 }
 function renameFunc(){
     rename = true;
-    console.log(rename);
 }
 function deleteFunc(){
     deleteContent = true;
 }
 function searchContent(folder, folderName){
-    console.log(folder.name);
     let nameFound = false;
     for(let i = 0; i < folder.content.length; i++){
         if(folder.content[i].name === folderName){
@@ -209,5 +240,28 @@ function searchContent(folder, folderName){
         for(let i = 0; i < folder.content.length; i++){
             searchContent(folder.content[i], folderName);
         }
+    }
+}
+function generateAccordion(folder,num,attachable){
+    //create elements
+    let accordionItem = document.createElement('li');
+    accordionItem.className = 'mb-1';
+    let itemButton = document.createElement('button');
+    itemButton.className = 'nav-link dropdown-toggle border-0 text-dark bg-white';
+    itemButton.setAttribute('data-bs-toggle','collapse');
+    itemButton.setAttribute('data-bs-target',`#collapse${num}`);
+    itemButton.setAttribute('aria-expanded','false');
+    itemButton.innerHTML = folder.name;
+    let ulEle = document.createElement('ul');
+    ulEle.className = 'nav flex-column ms-3 collapse';
+    ulEle.setAttribute('id',`collapse${num}`);
+    //appending elements
+    accordionItem.append(itemButton);
+    attachable.append(accordionItem);
+    attachable.append(ulEle);
+    //iterate through each folder and repeat this task recursively
+    for(let i = 0; i < folder.content.length; i++){
+        num+=1;
+        generateAccordion(folder.content[i],num,ulEle);
     }
 }

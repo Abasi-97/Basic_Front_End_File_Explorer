@@ -1,7 +1,15 @@
 # Basic_frontend_file_explorer
 # this is a basic implementation of a standard file system where you can make, rename and delete files and folders
 # You can also make files and folders inside of folders you have made, making it simulate a real file system
-# this is all thanks to the recursive data structure of a file system where an object exixts inside another:
+# The method used in updating the GUI for the file system is inefficient, as it needs to constantly remove and add elements
+to the DOM. As a result of this, it would not be able to handle large volumes of folders and files, which would be reflected
+on the GUI. However, later updates would be made to optimize it.
+# This project is for learning purposes, for many including the author to understand the file tree system and recursive
+tree traversal algorithms.
+# A far more complex and efficient file system would be built as a separate project and will also enable one to create,
+upload and share editable files with other users. It would be very similar to google drive and the likes.
+# the simple implementation of a file manager using pure client-side technology is all thanks to the recursive data structure 
+of a file system where an object exixts inside another:
 let root = {
     name:'folder-name',
     type: 'folder',
@@ -21,6 +29,7 @@ let root = {
         content: [{}]
     }]
 }
+# For further study, you may refer to "The Recursive Book of Recursion" by Al Sweigart. That is where the author got this idea for the folder structures
 #Each folder is treated as an object, which can contain another object
 # this is very easy to install, as all you need is to download or clone this repository and use it on your browser
 # This project has been written in vanilla JavaScript and no dependencies or frameworks whatsoever, other than CSS bootstrap

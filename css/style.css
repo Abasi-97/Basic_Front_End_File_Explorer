@@ -11,3 +11,10 @@ header{
 .file-list-content{
     cursor: pointer;
 }
+.rotate {
+    transition: transform 0.3s;
+  }
+
+  .rotate.down {
+    transform: rotate(90deg);
+  }
